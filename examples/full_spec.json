@@ -1,0 +1,44 @@
+{
+  project_info: {
+    name: ClearJson-Reference,
+    version: 1.0.0,
+    is_active: true,
+    build_number: 20260701
+  },
+
+  data_types: {
+    boolean_true: true,
+    boolean_false: false,
+    integer_val: 5432,
+    float_val: 3.14159,
+    null_val: null
+  },
+
+  tags: [
+    developer,
+    open-source,
+    minimalist,
+    cjson-spec
+  ],
+
+  physics: {
+    world_hull: {
+      mins: [-16, -16, 0],
+      maxs: [16, 16, 72]
+    }
+  },
+
+  endpoints: [
+    {
+      name: GetUsers,
+      requires_auth: true,
+      retry_limit: 3
+    },
+    {
+      name: DeleteLogs,
+      requires_auth: false,
+      retry_limit: 0
+    }
+  ]
+}
+
