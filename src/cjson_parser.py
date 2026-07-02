@@ -1,9 +1,10 @@
 import re
+import sys
+import json
 
 class CJSONParser:
     def __init__(self, cjson_text):
-        # Tách token: Phân tách các phần tử cấu trúc {}[],: và các từ/số
-        # Regex này đảm bảo không nhận diện các ký tự lạ, giữ tính thuần khiết
+        # Tách token: ký tự cấu trúc hoặc các từ/số
         self.tokens = re.findall(r'[{}\[\],:]|\w+|[0-9.-]+', cjson_text)
         self.pos = 0
 
@@ -16,7 +17,6 @@ class CJSONParser:
         return token
 
     def parse(self):
-        """Hàm duy nhất người dùng cần gọi để xử lý mọi dữ liệu"""
         return self._parse_value()
 
     def _parse_value(self):
@@ -33,12 +33,12 @@ class CJSONParser:
             if token == 'false': return False
             if token == 'null': return None
             
-            # Xử lý số (Integer/Float)
+            # Xử lý Number
             try:
                 if '.' in token: return float(token)
                 return int(token)
             except ValueError:
-                return token # Trả về như một chuỗi nếu không phải các dạng trên
+                return token # String mặc định
 
     def _parse_object(self):
         self._consume() # Consume '{'
@@ -62,9 +62,20 @@ class CJSONParser:
         self._consume() # Consume ']'
         return arr
 
-# --- CÁCH SỬ DỤNG CHO BẤT KỲ FILE NÀO ---
 def load_cjson(file_path):
     with open(file_path, 'r') as f:
-        content = f.read()
-        return CJSONParser(content).parse()
-          
+        return CJSONParser(f.read()).parse()
+
+# --- Phần CLI: Dùng để chạy trực tiếp trên Terminal ---
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python cjson_parser.py <file.cjson>")
+        sys.exit(1)
+        
+    try:
+        data = load_cjson(sys.argv[1])
+        # In ra JSON chuẩn để kiểm chứng
+        print(json.dumps(data, indent=2))
+    except Exception as e:
+        print(f"Error parsing .cjson: {e}")
+        
